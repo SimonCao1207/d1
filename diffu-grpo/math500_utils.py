@@ -1,10 +1,3 @@
-import torch
-import numpy as np
-import torch.nn.functional as F
-
-from transformers import AutoTokenizer, AutoModel
-from tqdm import tqdm
-import time
 import random
 import re
 
@@ -130,7 +123,7 @@ def fix_a_slash_b(string):
     try:
         a = int(a)
         b = int(b)
-        assert string == "{}/{}".format(a, b)
+        assert string == f"{a}/{b}"
         new_string = "\\frac{" + str(a) + "}{" + str(b) + "}"
         return new_string
     except AssertionError:

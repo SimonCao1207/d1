@@ -1,11 +1,11 @@
-from datasets import load_dataset, Dataset
-import pandas as pd
-from reward_func import extract_hash_answer
-
-import random
-import numpy as np
-import torch
 import os
+import random
+
+import numpy as np
+import pandas as pd
+import torch
+from datasets import Dataset, load_dataset
+from reward_func import extract_hash_answer
 
 
 def set_random_seed(seed: int = 42):

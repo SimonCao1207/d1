@@ -1,10 +1,11 @@
-import json
-import re
-import os
 import glob
-import tiktoken
+import json
+import os
+import re
 from collections import defaultdict
-from parser_helper import is_equiv, remove_boxed, last_boxed_only_string
+
+import tiktoken
+from parser_helper import is_equiv, last_boxed_only_string, remove_boxed
 
 
 def count_effective_tokens(text):
@@ -18,7 +19,7 @@ def count_effective_tokens(text):
 
 def parse_gsm_answers(json_path=None, json_data=None):
     if json_path:
-        with open(json_path, "r") as file:
+        with open(json_path) as file:
             data = json.load(file)
     else:
         data = json_data
@@ -97,7 +98,7 @@ def parse_gsm_answers(json_path=None, json_data=None):
 
 def parse_math_answers(json_path=None, json_data=None):
     if json_path:
-        with open(json_path, "r") as file:
+        with open(json_path) as file:
             data = json.load(file)
     else:
         data = json_data
@@ -156,7 +157,7 @@ def parse_math_answers(json_path=None, json_data=None):
 
 def parse_countdown_answers(json_path=None, json_data=None):
     if json_path:
-        with open(json_path, "r") as file:
+        with open(json_path) as file:
             data = json.load(file)
     else:
         data = json_data
@@ -267,7 +268,7 @@ def parse_countdown_answers(json_path=None, json_data=None):
 
 def parse_sudoku_answers(json_path=None, json_data=None):
     if json_path:
-        with open(json_path, "r") as file:
+        with open(json_path) as file:
             data = json.load(file)
     else:
         data = json_data

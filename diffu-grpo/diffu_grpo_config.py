@@ -140,7 +140,7 @@ class DiffuGRPOConfig(TrainingArguments):
     """
 
     # Parameters that control the model and reference model
-    model_init_kwargs: Optional[dict] = field(
+    model_init_kwargs: dict | None = field(
         default=None,
         metadata={
             "help": "Keyword arguments for `transformers.AutoModelForCausalLM.from_pretrained`, used when the `model` "
@@ -151,31 +151,31 @@ class DiffuGRPOConfig(TrainingArguments):
     # Parameters that control the data preprocessing
     # The default value remove_unused_columns is overwritten from the parent class, because in GRPO we usually rely on
     # additional columns to compute the reward
-    remove_unused_columns: Optional[bool] = field(
+    remove_unused_columns: bool | None = field(
         default=False,
         metadata={
             "help": "Whether to only keep the column 'prompt' in the dataset. If you use a custom reward function "
             "that requires any column other than 'prompts' and 'completions', you should keep this to `False`."
         },
     )
-    max_prompt_length: Optional[int] = field(
+    max_prompt_length: int | None = field(
         default=256,
         metadata={
             "help": "Maximum length of the prompt. If the prompt is longer than this value, it will be truncated left."
         },
     )
-    model_path: Optional[str] = field(
+    model_path: str | None = field(
         default="",
     )
 
-    num_generations: Optional[int] = field(
+    num_generations: int | None = field(
         default=8,
         metadata={
             "help": "Number of generations to sample. The global batch size (num_processes * per_device_batch_size) "
             "must be divisible by this value."
         },
     )
-    max_completion_length: Optional[int] = field(
+    max_completion_length: int | None = field(
         default=256,
         metadata={"help": "Maximum length of the generated completion."},
     )
@@ -201,14 +201,14 @@ class DiffuGRPOConfig(TrainingArguments):
             "Set to 1.0 to consider all tokens."
         },
     )
-    top_k: Optional[int] = field(
+    top_k: int | None = field(
         default=50,
         metadata={
             "help": "Number of highest probability vocabulary tokens to keep for top-k-filtering. If `None`, "
             "top-k-filtering is disabled."
         },
     )
-    min_p: Optional[float] = field(
+    min_p: float | None = field(
         default=None,
         metadata={
             "help": "Minimum token probability, which will be scaled by the probability of the most likely token. It "
@@ -223,13 +223,13 @@ class DiffuGRPOConfig(TrainingArguments):
             "to repeat tokens."
         },
     )
-    cache_implementation: Optional[str] = field(
+    cache_implementation: str | None = field(
         default=None,
         metadata={"help": "Implementation of the cache method for faster generation when use_vllm is set to False."},
     )
 
     # Parameters that control generation acceleration powered by vLLM
-    use_vllm: Optional[bool] = field(
+    use_vllm: bool | None = field(
         default=False,
         metadata={
             "help": "Whether to use vLLM for generating completions. If set to `True`, ensure that a GPU is kept "
@@ -237,7 +237,7 @@ class DiffuGRPOConfig(TrainingArguments):
             "(`pip install vllm`)."
         },
     )
-    vllm_device: Optional[str] = field(
+    vllm_device: str | None = field(
         default="auto",
         metadata={
             "help": "Device where vLLM generation will run, e.g. 'cuda:1'. If set to 'auto' (default), the system "
@@ -254,14 +254,14 @@ class DiffuGRPOConfig(TrainingArguments):
             "out-of-memory (OOM) errors during initialization."
         },
     )
-    vllm_dtype: Optional[str] = field(
+    vllm_dtype: str | None = field(
         default="auto",
         metadata={
             "help": "Data type to use for vLLM generation. If set to 'auto', the data type will be automatically "
             "determined based on the model configuration. Find the supported values in the vLLM documentation."
         },
     )
-    vllm_max_model_len: Optional[int] = field(
+    vllm_max_model_len: int | None = field(
         default=None,
         metadata={
             "help": "If set, the `max_model_len` to use for vLLM. This could be useful when running with reduced "
@@ -269,14 +269,14 @@ class DiffuGRPOConfig(TrainingArguments):
             "context size, which might be much larger than the KV cache, leading to inefficiencies."
         },
     )
-    vllm_enable_prefix_caching: Optional[bool] = field(
+    vllm_enable_prefix_caching: bool | None = field(
         default=True,
         metadata={
             "help": "Whether to enable prefix caching in vLLM. If set to `True` (default), ensure that the model and "
             "the hardware support this feature."
         },
     )
-    vllm_guided_decoding_regex: Optional[str] = field(
+    vllm_guided_decoding_regex: str | None = field(
         default=None,
         metadata={"help": "Regex for vLLM guided decoding. If `None` (default), guided decoding is disabled."},
     )
@@ -304,7 +304,7 @@ class DiffuGRPOConfig(TrainingArguments):
         default=0.2,
         metadata={"help": "Epsilon value for clipping."},
     )
-    reward_weights: Optional[list[float]] = field(
+    reward_weights: list[float] | None = field(
         default=None,
         metadata={
             "help": "Weights for each reward function. Must match the number of reward functions. If `None`, all "
@@ -340,27 +340,27 @@ class DiffuGRPOConfig(TrainingArguments):
         metadata={"help": "Whether to log the completions during training."},
     )
 
-    generation_batch_size: Optional[int] = field(
+    generation_batch_size: int | None = field(
         default=4,
         metadata={
             "help": "Batch size for generation. If not set, the batch size will be equal to the number of generations."
         },
     )
 
-    block_length: Optional[int] = field(
+    block_length: int | None = field(
         default=64,
         metadata={"help": "diffusion block length"},
     )
-    diffusion_steps: Optional[int] = field(
+    diffusion_steps: int | None = field(
         default=64,
     )
-    cfg_scale: Optional[float] = field(
+    cfg_scale: float | None = field(
         default=0.0,
     )
     remasking: Optional["str"] = field(
         default="low_confidence",
     )
-    dataset: Optional[str] = field(
+    dataset: str | None = field(
         default="gsm8k",
     )
     epsilon: float = field(

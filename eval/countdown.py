@@ -1,8 +1,8 @@
-import os
 import json
-from parsers import Parser, evaluate_equation, validate_equation
-from gsm8k import GSM8KDataset
+import os
 import warnings
+
+from gsm8k import GSM8KDataset
 
 CTD_SYSTEM_PROMPT = (
     "Using only the provided numbers, create an arithmetic expression that evaluates to exactly the provided target number. You may use the operations +, -, *, and / as needed, but each number must be used exactly once. Think step-by-step. After reasoning, provide only your final expression inside \\boxed"
@@ -40,7 +40,7 @@ class CTDDataset(GSM8KDataset):
     def load_test_dataset(self):
         self.dataset = []
         cur_path = os.path.dirname(os.path.abspath(__file__))
-        with open(f"{cur_path}/../dataset/countdown_cd3_test.jsonl", "r") as f:
+        with open(f"{cur_path}/../dataset/countdown_cd3_test.jsonl") as f:
             for line in f:
                 self.dataset.append(json.loads(line))
         print(len(self.dataset), "examples loaded")

@@ -8,16 +8,15 @@ import time
 import numpy as np
 import torch
 import torch.distributed as dist
-from torch.utils.data import DataLoader, DistributedSampler
-from tqdm import tqdm
-from transformers import AutoTokenizer, AutoModel
-from peft import PeftModel
-
+from countdown import CTDDataset
 from generate import generate
 from gsm8k import GSM8KDataset
 from math500 import MATH500Dataset
-from countdown import CTDDataset
+from peft import PeftModel
 from sudoku import SudokuDataset
+from torch.utils.data import DataLoader, DistributedSampler
+from tqdm import tqdm
+from transformers import AutoModel, AutoTokenizer
 
 DATASET_MAP = {
     "gsm8k": GSM8KDataset,

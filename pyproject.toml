@@ -64,7 +64,5 @@ line-length = 120
 "__init__.py" = ["E402", "F401", "F403", "E501"]
 
 [tool.ruff.lint]
-extend-select = ["UP"]
-ignore = [
-    "F722"
-]
+select = ["E", "F", "I", "UP"]
+ignore = ["F722"]

@@ -1,30 +1,28 @@
-import torch
-from trl.trainer.grpo_trainer import GRPOTrainer
-from typing import Any, Callable, Optional, Union, Sized
-import numpy as np
-from transformers import PreTrainedModel, PreTrainedTokenizerBase, TrainerCallback, Trainer
-from datasets import Dataset, IterableDataset
 import warnings
+from collections.abc import Callable
+from typing import Any, Optional, Union
+
+import numpy as np
+import torch
 import torch.nn.functional as F
-from trl.trainer.grpo_config import GRPOConfig
-from trl.extras.profiling import profiling_decorator, profiling_context
-from transformers.utils import is_peft_available
-from torch import nn
-from trl.import_utils import is_rich_available, is_vllm_available
-from accelerate.utils import broadcast_object_list, gather, gather_object, is_peft_model, set_seed
-from trl.data_utils import apply_chat_template, is_conversational, maybe_apply_chat_template
-from trl.models import create_reference_model, prepare_deepspeed, unwrap_model_for_generation
-from trl.trainer.utils import (
-    generate_model_card,
-    get_comet_experiment_url,
-    pad,
-    print_prompt_completions_sample,
-    selective_log_softmax,
-)
 import wandb
+from accelerate.utils import gather, gather_object, set_seed
+from datasets import Dataset, IterableDataset
+from torch import nn
+from transformers import PreTrainedModel, PreTrainedTokenizerBase, Trainer, TrainerCallback
+from transformers.utils import is_peft_available
+from trl.data_utils import is_conversational, maybe_apply_chat_template
+from trl.extras.profiling import profiling_context, profiling_decorator
+from trl.import_utils import is_rich_available
+from trl.models import unwrap_model_for_generation
+from trl.trainer.grpo_config import GRPOConfig
+from trl.trainer.grpo_trainer import GRPOTrainer
+from trl.trainer.utils import (
+    print_prompt_completions_sample,
+)
 
 if is_peft_available():
-    from peft import PeftConfig, get_peft_model
+    from peft import PeftConfig
 # What we call a reward function is a callable that takes a list of prompts and completions and returns a list of
 # rewards. When it's a string, it's a model ID, so it's loaded as a pretrained model.
 RewardFunc = Union[str, PreTrainedModel, Callable[[list, list], list[float]]]
@@ -46,15 +44,15 @@ class DiffuGRPOTrainer(GRPOTrainer):
 
     def __init__(
         self,
-        model: Union[str, PreTrainedModel],
-        reward_funcs: Union[RewardFunc, list[RewardFunc]],
-        args: Optional[GRPOConfig] = None,
-        train_dataset: Optional[Union[Dataset, IterableDataset]] = None,
-        eval_dataset: Optional[Union[Dataset, IterableDataset, dict[str, Union[Dataset, IterableDataset]]]] = None,
-        processing_class: Optional[PreTrainedTokenizerBase] = None,
-        reward_processing_classes: Optional[Union[PreTrainedTokenizerBase, list[PreTrainedTokenizerBase]]] = None,
-        callbacks: Optional[list[TrainerCallback]] = None,
-        optimizers: tuple[Optional[torch.optim.Optimizer], Optional[torch.optim.lr_scheduler.LambdaLR]] = (
+        model: str | PreTrainedModel,
+        reward_funcs: RewardFunc | list[RewardFunc],
+        args: GRPOConfig | None = None,
+        train_dataset: Dataset | IterableDataset | None = None,
+        eval_dataset: Dataset | IterableDataset | dict[str, Dataset | IterableDataset] | None = None,
+        processing_class: PreTrainedTokenizerBase | None = None,
+        reward_processing_classes: PreTrainedTokenizerBase | list[PreTrainedTokenizerBase] | None = None,
+        callbacks: list[TrainerCallback] | None = None,
+        optimizers: tuple[torch.optim.Optimizer | None, torch.optim.lr_scheduler.LambdaLR | None] = (
             None,
             None,
         ),
@@ -344,7 +342,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
         per_token_logps = per_token_logps.to(torch.float32)
         return per_token_logps
 
-    def _prepare_inputs(self, inputs: dict[str, Union[torch.Tensor, Any]]) -> dict[str, Union[torch.Tensor, Any]]:
+    def _prepare_inputs(self, inputs: dict[str, torch.Tensor | Any]) -> dict[str, torch.Tensor | Any]:
         mode = "eval" if self.control.should_evaluate else "train"
         if mode == "train":
             if self.state.global_step % self.num_iterations == 0:
@@ -358,9 +356,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
             inputs = self._generate_and_score_completions(inputs)
         return inputs
 
-    def _generate_and_score_completions(
-        self, inputs: dict[str, Union[torch.Tensor, Any]]
-    ) -> dict[str, Union[torch.Tensor, Any]]:
+    def _generate_and_score_completions(self, inputs: dict[str, torch.Tensor | Any]) -> dict[str, torch.Tensor | Any]:
         device = self.accelerator.device
 
         prompts = [x["prompt"] for x in inputs]

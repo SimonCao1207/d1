@@ -1,18 +1,3 @@
-import json
-import re
-import os
-import glob
-from collections import defaultdict
-
-
-import json
-import re
-
-
-import json
-import re
-
-
 def last_boxed_only_string(string):
     idx = string.rfind("\\boxed")
     if "\\boxed " in string:
@@ -190,7 +175,7 @@ def fix_a_slash_b(string):
     try:
         a = int(a)
         b = int(b)
-        assert string == "{}/{}".format(a, b)
+        assert string == f"{a}/{b}"
         new_string = "\\frac{" + str(a) + "}{" + str(b) + "}"
         return new_string
     except AssertionError:

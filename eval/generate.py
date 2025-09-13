@@ -1,8 +1,8 @@
-import torch
 import numpy as np
+import torch
+import torch.distributed as dist
 import torch.nn.functional as F
 from tqdm import tqdm
-import torch.distributed as dist
 
 
 def add_gumbel_noise(logits, temperature):

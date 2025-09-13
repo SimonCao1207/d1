@@ -1,4 +1,5 @@
 import re
+
 import numpy as np
 
 
@@ -39,7 +40,7 @@ def evaluate_equation(equation_str):
         # Evaluate the equation with restricted globals and locals
         result = eval(equation_str, {"__builtins__": None}, {})
         return result
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -61,20 +62,20 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.1,
         do_print = True
     do_print = np.random.rand() < 0.4
     if do_print:
-        print(f"--------------------------------")
+        print("--------------------------------")
         print(f"Target: {target} | Numbers: {numbers}")
         print(f"Extracted equation: {equation}")
         print(f"Solution string: {solution_str}")
 
     if equation is None:
         if do_print:
-            print(f"No equation found")
+            print("No equation found")
         return 0
 
     # Validate equation uses correct numbers
     if not validate_equation(equation, numbers):
         if do_print:
-            print(f"Invalid equation")
+            print("Invalid equation")
         return format_score
 
     # Evaluate equation
@@ -82,7 +83,7 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.1,
         result = evaluate_equation(equation)
         if result is None:
             if do_print:
-                print(f"Could not evaluate equation")
+                print("Could not evaluate equation")
             return format_score
 
         if abs(result - target) < 1e-5:  # Account for floating point precision
@@ -95,7 +96,7 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.1,
             return format_score
     except:
         if do_print:
-            print(f"Error evaluating equation")
+            print("Error evaluating equation")
         return format_score
 
 
@@ -261,7 +262,7 @@ def fix_a_slash_b(string):
     try:
         a = int(a)
         b = int(b)
-        assert string == "{}/{}".format(a, b)
+        assert string == f"{a}/{b}"
         new_string = "\\frac{" + str(a) + "}{" + str(b) + "}"
         return new_string
     except AssertionError:
@@ -385,5 +386,5 @@ def evaluate_equation(equation_str):
         # Evaluate the equation with restricted globals and locals
         result = eval(equation_str.strip(), {"__builtins__": None}, {})
         return result
-    except Exception as e:
+    except Exception:
         return float("Inf")

@@ -1,16 +1,7 @@
-import torch
-import numpy as np
-import torch.nn.functional as F
-
-from transformers import AutoTokenizer, AutoModel
-from tqdm import tqdm
-import time
-from generate import generate
 import random
-import re
-from gsm8k import GSM8KDataset
+
 from datasets import load_dataset
-from parsers import Parser, is_equiv
+from gsm8k import GSM8KDataset
 
 MATH500_SYSTEM_PROMPT = """You are a math expert. You will be given a question to solve. Solve it step by step. Wrap the final answer in a \\boxed{}.
 Respond in the following format:

@@ -1,6 +1,7 @@
-import numpy as np
 import re
-from math500_utils import remove_boxed, last_boxed_only_string, is_equiv, boxed_in_answer
+
+import numpy as np
+from math500_utils import boxed_in_answer, is_equiv, last_boxed_only_string, remove_boxed
 
 
 def extract_xml_answer(text: str) -> str:
@@ -118,26 +119,26 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.1,
     do_print = np.random.rand() < 0.4
 
     if do_print:
-        print(f"--------------------------------")
+        print("--------------------------------")
         print(f"Target: {target} | Numbers: {numbers}")
         print(f"Extracted equation: {equation}")
         print(f"Solution string: {solution_str}")
 
     if equation is None:
         if do_print:
-            print(f"No equation found")
+            print("No equation found")
         return 0
 
     if not validate_equation(equation, numbers):
         if do_print:
-            print(f"Invalid equation")
+            print("Invalid equation")
         return format_score
 
     try:
         result = evaluate_equation(equation)
         if result is None:
             if do_print:
-                print(f"Could not evaluate equation")
+                print("Could not evaluate equation")
             return format_score
 
         if abs(result - target) < 1e-5:
@@ -150,7 +151,7 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.1,
             return format_score
     except:
         if do_print:
-            print(f"Error evaluating equation")
+            print("Error evaluating equation")
         return format_score
 
 
@@ -212,7 +213,7 @@ def sudoku_reward_func(prompts, completions, run_name, step=None, rank=None, **k
         scores.append(score)
 
         if do_print:
-            print(f"--------------------------------")
+            print("--------------------------------")
             print(f"Puzzle: {puzzle} (length: {len(puzzle)})")
             print(f"Extracted solution: {solution}  (length: {len(solution) if solution else 0})")
             print(f"Ground_truth: {ground_truth}")

@@ -1,31 +1,29 @@
 import torch
-import wandb
-from transformers import AutoTokenizer, AutoModel, BitsAndBytesConfig
-from trl import TrlParser, ModelConfig
-from peft import LoraConfig
+from data_utils import (
+    get_countdown_questions,
+    get_gsm8k_questions,
+    get_math_questions,
+    get_sudoku_questions,
+    set_random_seed,
+)
+from diffu_grpo_config import DiffuGRPOConfig
 
 # Custom imports
 from diffu_grpo_trainer import DiffuGRPOTrainer
-from diffu_grpo_config import DiffuGRPOConfig
+from peft import LoraConfig
 from reward_func import (
-    xmlcount_reward_func,
+    boxed_and_answer_tags_format_reward,
+    correctness_reward_func,
+    correctness_reward_func_math,
+    countdown_reward_func,
+    int_reward_func,
     soft_format_reward_func,
     strict_format_reward_func,
-    int_reward_func,
-    correctness_reward_func,
-    countdown_reward_func,
-    correctness_reward_func_math,
     sudoku_reward_func,
-    boxed_and_answer_tags_format_reward,
-    reward_len,
+    xmlcount_reward_func,
 )
-from data_utils import (
-    get_gsm8k_questions,
-    get_countdown_questions,
-    get_sudoku_questions,
-    set_random_seed,
-    get_math_questions,
-)
+from transformers import AutoModel, AutoTokenizer, BitsAndBytesConfig
+from trl import ModelConfig, TrlParser
 
 
 def main(grpo_config, model_config):

@@ -16,9 +16,9 @@ class dLLMTrainer(Trainer):
         labels, t, num_prompt_tokens = inputs.pop("labels"), inputs.pop("t"), inputs.pop("num_prompt_tokens")
         outputs = model(**inputs)
         logits = outputs.logits
-        unscaled_loss = F.cross_entropy(
-            logits.view(-1, logits.shape[-1]), labels.view(-1), reduction="none"
-        ).view(logits.shape[0], -1)
+        unscaled_loss = F.cross_entropy(logits.view(-1, logits.shape[-1]), labels.view(-1), reduction="none").view(
+            logits.shape[0], -1
+        )
         if (self.state.global_step + 1) % self.args.logging_steps == 0:
             self.log({"unscaled_loss": (unscaled_loss.sum() / (labels != -100).sum()).item()})
         loss = unscaled_loss / t
@@ -63,9 +63,9 @@ class dLLMDataCollator(DefaultDataCollator):
         if "max_length" in kwargs:
             self.max_length = kwargs["max_length"]
         if kwargs["tokenizer"].mask_token_id is None:
-            assert (
-                "mask_token_id" in kwargs
-            ), "For dLLM models, pass a mask_token_id or set it equal to tokenizer.mask_token_id"
+            assert "mask_token_id" in kwargs, (
+                "For dLLM models, pass a mask_token_id or set it equal to tokenizer.mask_token_id"
+            )
             self.mask_token_id = kwargs["mask_token_id"]
 
     def forward_process(self, batch, eps=1e-3):
@@ -115,7 +115,9 @@ def preprocess_dataset(data, tokenizer, max_length, test_split=0.01):
     preprocessed_data = []
     for i in tqdm(range(len(data)), desc="Preprocessing dataset"):
         question = SYSTEM_PROMPT + "\n\n" + data[i]["question"]
-        trajectory = f"<reasoning>{data[i]['thinking_trajectories'][0]}</reasoning>\n<answer>{data[i]['attempt']}</answer>"
+        trajectory = (
+            f"<reasoning>{data[i]['thinking_trajectories'][0]}</reasoning>\n<answer>{data[i]['attempt']}</answer>"
+        )
         prompt = [{"role": "user", "content": question}]
         response = [{"role": "assistant", "content": trajectory}]
         inputs = tokenizer.apply_chat_template(prompt + response, tokenize=False)

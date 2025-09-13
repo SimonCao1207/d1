@@ -1,0 +1,70 @@
+[project]
+name = "d1"
+version = "0.0.1"
+description = "d1"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "einops>=0.8.1", # more general tensor operations
+    "jaxtyping>=0.3.0", # type hints for pytorch/jax/numpy
+    "numpy",
+    "ruff>=0.12.0",
+    "ipykernel>=6.29.5",
+    "pandas>=2.3.0",
+    "wandb>=0.21.0",
+    "transformers>=4.53.2",
+    "pytest>=8.4.1",
+    "omegaconf>=2.3.0",
+    "matplotlib>=3.10.3",
+    "datasets<=3.6.0",
+    "torchvision>=0.21.0",
+    "torch>=2.6.0",
+    "scikit-learn>=1.7.1",
+    "torchaudio>=2.7.1",
+    "accelerate>=1.10.1",
+    "deepspeed>=0.17.5",
+    "tiktoken>=0.11.0",
+    "tqdm>=4.67.1",
+    "regex>=2025.9.1",
+    "peft>=0.17.1",
+    "sentencepiece>=0.2.1",
+    "evaluate>=0.4.5",
+    "scipy>=1.16.2",
+]
+
+
+[tool.setuptools.packages.find]
+include = ["src"]
+
+[tool.uv]
+package = true
+python-preference = "managed"
+
+[tool.uv.sources]
+torchvision = { index = "pytorch-cu118" }
+torch = { index = "pytorch-cu118" }
+mergekit = { path = "mergekit", editable = true }
+
+[[tool.uv.index]]
+name = "pytorch-cu118"
+url = "https://download.pytorch.org/whl/cu118"
+explicit = true
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "WARNING"
+addopts = "-s"
+
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint.extend-per-file-ignores]
+# Also ignore `E402` in all `__init__.py` files.
+"__init__.py" = ["E402", "F401", "F403", "E501"]
+
+[tool.ruff.lint]
+extend-select = ["UP"]
+ignore = [
+    "F722"
+]

@@ -136,7 +136,6 @@ class Parser:
         print(generated_text)
         print(pred)
         if pred is not None:
-
             pred = pred.replace(r"\div", "/").replace("\times", "*").replace(r"\cdot", "*")
 
         return pred

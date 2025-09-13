@@ -192,9 +192,7 @@ class DiffuGRPOConfig(TrainingArguments):
     # Parameters that control generation
     temperature: float = field(
         default=0.9,
-        metadata={
-            "help": "Temperature for sampling. The higher the temperature, the more random the completions."
-        },
+        metadata={"help": "Temperature for sampling. The higher the temperature, the more random the completions."},
     )
     top_p: float = field(
         default=1.0,
@@ -227,9 +225,7 @@ class DiffuGRPOConfig(TrainingArguments):
     )
     cache_implementation: Optional[str] = field(
         default=None,
-        metadata={
-            "help": "Implementation of the cache method for faster generation when use_vllm is set to False."
-        },
+        metadata={"help": "Implementation of the cache method for faster generation when use_vllm is set to False."},
     )
 
     # Parameters that control generation acceleration powered by vLLM
@@ -282,9 +278,7 @@ class DiffuGRPOConfig(TrainingArguments):
     )
     vllm_guided_decoding_regex: Optional[str] = field(
         default=None,
-        metadata={
-            "help": "Regex for vLLM guided decoding. If `None` (default), guided decoding is disabled."
-        },
+        metadata={"help": "Regex for vLLM guided decoding. If `None` (default), guided decoding is disabled."},
     )
 
     # Parameters that control the training

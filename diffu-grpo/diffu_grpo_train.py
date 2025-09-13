@@ -29,7 +29,6 @@ from data_utils import (
 
 
 def main(grpo_config, model_config):
-
     # Set seed for reproducibility
     set_random_seed(grpo_config.seed)
 

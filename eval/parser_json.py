@@ -358,21 +358,15 @@ def aggregate_results(directory=".", save_detailed=True):
         if setup_name:
             # print(f"Processing {filename}...")
             if "gsm" in setup_name:
-                correct, processed, detailed_results, total_effective_tokens = parse_gsm_answers(
-                    json_path=json_file
-                )
+                correct, processed, detailed_results, total_effective_tokens = parse_gsm_answers(json_path=json_file)
             elif "math" in setup_name:
-                correct, processed, detailed_results, total_effective_tokens = parse_math_answers(
-                    json_path=json_file
-                )
+                correct, processed, detailed_results, total_effective_tokens = parse_math_answers(json_path=json_file)
             elif "countdown" in setup_name:
                 correct, processed, detailed_results, total_effective_tokens = parse_countdown_answers(
                     json_path=json_file
                 )
             elif "sudoku" in setup_name:
-                correct, processed, detailed_results, total_effective_tokens = parse_sudoku_answers(
-                    json_path=json_file
-                )
+                correct, processed, detailed_results, total_effective_tokens = parse_sudoku_answers(json_path=json_file)
 
             setups[setup_name]["correct"] += correct
             setups[setup_name]["processed"] += processed
@@ -382,9 +376,7 @@ def aggregate_results(directory=".", save_detailed=True):
     # Calculate final accuracy and save results
     print("\n===== AGGREGATED RESULTS =====")
     for setup, results in sorted(setups.items()):
-        results["accuracy"] = (
-            results["correct"] / results["processed"] * 100 if results["processed"] > 0 else 0
-        )
+        results["accuracy"] = results["correct"] / results["processed"] * 100 if results["processed"] > 0 else 0
         results["avg_effective_tokens"] = results["total_effective_tokens"] / len(results["questions"])
         print(
             f"{setup}: {results['correct']}/{results['processed']} correct ({results['accuracy']:.2f}% accuracy), avg effective tokens: {results['avg_effective_tokens']:.2f}"

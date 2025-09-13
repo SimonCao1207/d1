@@ -202,9 +202,7 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(args.model_path, trust_remote_code=True)
 
     if args.checkpoint_path:
-        model = PeftModel.from_pretrained(model, args.checkpoint_path, torch_dtype=torch.bfloat16).to(
-            local_rank
-        )
+        model = PeftModel.from_pretrained(model, args.checkpoint_path, torch_dtype=torch.bfloat16).to(local_rank)
 
         if dist.get_world_size() > 1:
             dist.barrier()  # Make sure all processes are ready

@@ -94,7 +94,5 @@ class GSM8KDataset(torch.utils.data.Dataset):
         prompts = [item[0] for item in batch]
         questions = [item[1] for item in batch]
         answers = [item[2] for item in batch]
-        input_ids = self.tokenizer(
-            prompts, padding_side="left", return_tensors="pt", padding="longest"
-        ).input_ids
+        input_ids = self.tokenizer(prompts, padding_side="left", return_tensors="pt", padding="longest").input_ids
         return {"input_ids": input_ids, "questions": questions, "answers": answers, "prompts": prompts}

@@ -59,9 +59,7 @@ def generate(
     """
     # Use mixed precision for faster computation
     with torch.autocast(device_type="cuda"):
-        x = torch.full(
-            (prompt.shape[0], prompt.shape[1] + gen_length), mask_id, dtype=torch.long, device=prompt.device
-        )
+        x = torch.full((prompt.shape[0], prompt.shape[1] + gen_length), mask_id, dtype=torch.long, device=prompt.device)
         x[:, : prompt.shape[1]] = prompt.clone()
 
         prompt_index = x != mask_id

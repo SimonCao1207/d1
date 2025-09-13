@@ -418,9 +418,7 @@ def aggregate_results(directory="."):
 
     # Calculate final accuracy and save results
     for setup, results in sorted(setups.items()):
-        results["accuracy"] = (
-            results["correct"] / results["processed"] * 100 if results["processed"] > 0 else 0
-        )
+        results["accuracy"] = results["correct"] / results["processed"] * 100 if results["processed"] > 0 else 0
         results["avg_effective_tokens"] = (
             results["total_effective_tokens"] / results["processed"] if len(results["questions"]) > 0 else 0
         )

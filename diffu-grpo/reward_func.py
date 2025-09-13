@@ -155,11 +155,7 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.1,
 
 
 def countdown_reward_func(prompts, completions, run_name, step=None, rank=None, **kwargs) -> list[float]:
-    if (
-        isinstance(completions[0], list)
-        and isinstance(completions[0][0], dict)
-        and "content" in completions[0][0]
-    ):
+    if isinstance(completions[0], list) and isinstance(completions[0][0], dict) and "content" in completions[0][0]:
         responses = [completion[0]["content"] for completion in completions]
     else:
         responses = completions
@@ -200,11 +196,7 @@ def validate_sudoku_solution(solution_str, ground_truth, puzzle):
 
 
 def sudoku_reward_func(prompts, completions, run_name, step=None, rank=None, **kwargs) -> list[float]:
-    if (
-        isinstance(completions[0], list)
-        and isinstance(completions[0][0], dict)
-        and "content" in completions[0][0]
-    ):
+    if isinstance(completions[0], list) and isinstance(completions[0][0], dict) and "content" in completions[0][0]:
         responses = [completion[0]["content"] for completion in completions]
     else:
         responses = completions
@@ -229,9 +221,7 @@ def sudoku_reward_func(prompts, completions, run_name, step=None, rank=None, **k
     return scores
 
 
-def correctness_reward_func_math(
-    prompts, completions, answer, step=None, run_name=None, **kwargs
-) -> list[float]:
+def correctness_reward_func_math(prompts, completions, answer, step=None, run_name=None, **kwargs) -> list[float]:
     boxed_in_answer_rewards = boxed_in_answer(prompts, completions, answer, step=step)
     responses = [completion[0]["content"] for completion in completions]
     q = prompts[0][-1]["content"]

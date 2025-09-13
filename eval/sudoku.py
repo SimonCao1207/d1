@@ -27,7 +27,6 @@ Your step-by-step solving process
 
 
 class SudokuDataset(GSM8KDataset):
-
     def __init__(
         self,
         tokenizer,

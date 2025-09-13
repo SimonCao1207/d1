@@ -29,9 +29,7 @@ def parse_args():
         "--model_name", type=str, default="GSAI-ML/LLaDA-8B-Instruct", help="Name of the pretrained model"
     )
     parser.add_argument("--batch_size", type=int, default=1, help="Batch size for training")
-    parser.add_argument(
-        "--max_length", type=int, default=4096, help="Maximum sequence length for tokenization"
-    )
+    parser.add_argument("--max_length", type=int, default=4096, help="Maximum sequence length for tokenization")
     parser.add_argument("--num_epochs", type=int, default=20, help="Number of training epochs")
     parser.add_argument("--learning_rate", type=float, default=1e-5, help="Learning rate for the optimizer")
     parser.add_argument("--grad_accum_steps", type=int, default=4, help="Gradient accumulation steps")
@@ -119,9 +117,7 @@ def train_model(args, tokenizer, model):
 
     # Create optimizer and scheduler
     num_train_steps = int(
-        len(train_dataset)
-        * args.num_epochs
-        / (args.batch_size * args.grad_accum_steps * torch.cuda.device_count())
+        len(train_dataset) * args.num_epochs / (args.batch_size * args.grad_accum_steps * torch.cuda.device_count())
     )
     # Initialize Trainer with custom dLLMTrainer
     trainer = dLLMTrainer(

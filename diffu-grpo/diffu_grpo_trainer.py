@@ -50,13 +50,9 @@ class DiffuGRPOTrainer(GRPOTrainer):
         reward_funcs: Union[RewardFunc, list[RewardFunc]],
         args: Optional[GRPOConfig] = None,
         train_dataset: Optional[Union[Dataset, IterableDataset]] = None,
-        eval_dataset: Optional[
-            Union[Dataset, IterableDataset, dict[str, Union[Dataset, IterableDataset]]]
-        ] = None,
+        eval_dataset: Optional[Union[Dataset, IterableDataset, dict[str, Union[Dataset, IterableDataset]]]] = None,
         processing_class: Optional[PreTrainedTokenizerBase] = None,
-        reward_processing_classes: Optional[
-            Union[PreTrainedTokenizerBase, list[PreTrainedTokenizerBase]]
-        ] = None,
+        reward_processing_classes: Optional[Union[PreTrainedTokenizerBase, list[PreTrainedTokenizerBase]]] = None,
         callbacks: Optional[list[TrainerCallback]] = None,
         optimizers: tuple[Optional[torch.optim.Optimizer], Optional[torch.optim.lr_scheduler.LambdaLR]] = (
             None,
@@ -128,9 +124,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
 
         is_clipped = (per_token_loss1 < per_token_loss2).float()
         clip_ratio = (is_clipped * completion_mask).sum() / completion_mask.sum()
-        self._metrics[mode]["clip_ratio"].append(
-            self.accelerator.gather_for_metrics(clip_ratio).mean().item()
-        )
+        self._metrics[mode]["clip_ratio"].append(self.accelerator.gather_for_metrics(clip_ratio).mean().item())
 
         return loss
 
@@ -201,18 +195,14 @@ class DiffuGRPOTrainer(GRPOTrainer):
                                 logits = model(x).logits
 
                             # Apply Gumbel noise for sampling
-                            logits_with_noise = self.add_gumbel_noise(
-                                logits, temperature=temperature, dtype=dtype
-                            )
+                            logits_with_noise = self.add_gumbel_noise(logits, temperature=temperature, dtype=dtype)
                             x0 = torch.argmax(logits_with_noise, dim=-1)
                             del logits_with_noise
 
                             # Handle remasking strategy
                             if remasking == "low_confidence":
                                 p = F.softmax(logits.to(dtype), dim=-1)
-                                x0_p = torch.squeeze(
-                                    torch.gather(p, dim=-1, index=torch.unsqueeze(x0, -1)), -1
-                                )
+                                x0_p = torch.squeeze(torch.gather(p, dim=-1, index=torch.unsqueeze(x0, -1)), -1)
                             elif remasking == "random":
                                 x0_p = torch.rand((x0.shape[0], x0.shape[1]), device=x0.device)
                             else:
@@ -311,9 +301,9 @@ class DiffuGRPOTrainer(GRPOTrainer):
         per_token_logps = torch.zeros(num_iterations, batch_size, logits_to_keep, device=device)
 
         # Verify mask_seeds length: one seed per iteration
-        assert (
-            len(mask_seeds) == num_iterations
-        ), f"Expected mask_seeds length to be {num_iterations}, got {len(mask_seeds)}"
+        assert len(mask_seeds) == num_iterations, (
+            f"Expected mask_seeds length to be {num_iterations}, got {len(mask_seeds)}"
+        )
 
         prompt_length = seq_len - logits_to_keep
         prompt_index = torch.zeros(seq_len, dtype=torch.bool, device=device)
@@ -324,9 +314,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
         all_expanded_inputs = []
         for iter_idx, mask_seed in enumerate(mask_seeds):
             expanded_input = input_ids[iter_idx]  # [batch_size, seq_len]
-            perturbed_seq, _ = self.forward_process(
-                expanded_input, prompt_index, self.args.mask_id, seed=mask_seed
-            )
+            perturbed_seq, _ = self.forward_process(expanded_input, prompt_index, self.args.mask_id, seed=mask_seed)
             all_perturbed_seqs.append(perturbed_seq)
             all_expanded_inputs.append(expanded_input)
 
@@ -340,12 +328,8 @@ class DiffuGRPOTrainer(GRPOTrainer):
         )  # [num_iterations * batch_size, seq_len, vocab_size]
 
         # Calculate cross-entropy loss for completion tokens only
-        completion_logits = logits[
-            :, -logits_to_keep:, :
-        ]  # [num_iterations * batch_size, logits_to_keep, vocab_size]
-        completion_targets = expanded_input[
-            :, -logits_to_keep:
-        ]  # [num_iterations * batch_size, logits_to_keep]
+        completion_logits = logits[:, -logits_to_keep:, :]  # [num_iterations * batch_size, logits_to_keep, vocab_size]
+        completion_targets = expanded_input[:, -logits_to_keep:]  # [num_iterations * batch_size, logits_to_keep]
         flat_logits = completion_logits.reshape(-1, completion_logits.size(-1))
         flat_targets = completion_targets.reshape(-1)
         loss = F.cross_entropy(flat_logits, flat_targets, reduction="none")
@@ -360,9 +344,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
         per_token_logps = per_token_logps.to(torch.float32)
         return per_token_logps
 
-    def _prepare_inputs(
-        self, inputs: dict[str, Union[torch.Tensor, Any]]
-    ) -> dict[str, Union[torch.Tensor, Any]]:
+    def _prepare_inputs(self, inputs: dict[str, Union[torch.Tensor, Any]]) -> dict[str, Union[torch.Tensor, Any]]:
         mode = "eval" if self.control.should_evaluate else "train"
         if mode == "train":
             if self.state.global_step % self.num_iterations == 0:
@@ -382,9 +364,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
         device = self.accelerator.device
 
         prompts = [x["prompt"] for x in inputs]
-        prompts_text = [
-            maybe_apply_chat_template(example, self.processing_class)["prompt"] for example in inputs
-        ]
+        prompts_text = [maybe_apply_chat_template(example, self.processing_class)["prompt"] for example in inputs]
         prompt_inputs = self.processing_class(
             text=prompts_text,
             return_tensors="pt",
@@ -447,9 +427,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
         eos_idx[is_eos.any(dim=1)] = is_eos.int().argmax(dim=1)[is_eos.any(dim=1)]
         sequence_indices = torch.arange(is_eos.size(1), device=device).expand(is_eos.size(0), -1)
         completion_mask = (sequence_indices <= eos_idx.unsqueeze(1)).int()
-        logits_to_keep = completion_ids.size(
-            1
-        )  # we only need to compute the logits for the completion tokens
+        logits_to_keep = completion_ids.size(1)  # we only need to compute the logits for the completion tokens
         if self.args.random_masking:
             # use random seeds for every iterations in GRPO iterations
             mask_seeds = torch.randint(0, 2**12, (self.num_iterations,), device=device)
@@ -462,9 +440,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
         with torch.no_grad():
             if self.num_iterations > 1:
                 # repeat prompt completion ids self.num_iterations times
-                prompt_completion_ids_expanded = prompt_completion_ids.unsqueeze(0).expand(
-                    self.num_iterations, -1, -1
-                )
+                prompt_completion_ids_expanded = prompt_completion_ids.unsqueeze(0).expand(self.num_iterations, -1, -1)
                 old_per_token_logps = self._get_per_token_logps(
                     self.model, prompt_completion_ids_expanded, logits_to_keep, mask_seeds
                 )
@@ -494,14 +470,11 @@ class DiffuGRPOTrainer(GRPOTrainer):
         for i, (reward_func, reward_processing_class) in enumerate(
             zip(self.reward_funcs, self.reward_processing_classes)
         ):
-            if isinstance(
-                reward_func, nn.Module
-            ):  # Module instead of PretrainedModel for compat with compiled models
+            if isinstance(reward_func, nn.Module):  # Module instead of PretrainedModel for compat with compiled models
                 reward_func_name = f"reward {reward_func.config._name_or_path.split('/')[-1]}"
             else:
                 reward_func_name = reward_func.__name__
             with profiling_context(self, reward_func_name):
-
                 # Repeat all input columns (but "prompt" and "completion") to match the number of generations
                 keys = [key for key in inputs[0] if key not in ["prompt", "completion"]]
                 reward_kwargs = {key: [example[key] for example in inputs] for key in keys}
@@ -513,9 +486,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
                     **reward_kwargs,
                 )
                 # Convert None values to NaN
-                output_reward_func = [
-                    reward if reward is not None else torch.nan for reward in output_reward_func
-                ]
+                output_reward_func = [reward if reward is not None else torch.nan for reward in output_reward_func]
 
                 rewards_per_func[:, i] = torch.tensor(output_reward_func, dtype=torch.float32, device=device)
 
@@ -561,9 +532,7 @@ class DiffuGRPOTrainer(GRPOTrainer):
 
         # Calculate mean reward per function, but only for samples where the function was applied
         for i, reward_func in enumerate(self.reward_funcs):
-            if isinstance(
-                reward_func, nn.Module
-            ):  # Module instead of PretrainedModel for compat with compiled models
+            if isinstance(reward_func, nn.Module):  # Module instead of PretrainedModel for compat with compiled models
                 reward_func_name = reward_func.config._name_or_path.split("/")[-1]
             else:
                 reward_func_name = reward_func.__name__

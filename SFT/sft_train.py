@@ -1,14 +1,13 @@
-import torch
 import argparse
-from transformers import AutoTokenizer, AutoModel, TrainingArguments
-from datasets import load_dataset
-from torch.utils.data import DataLoader
-from peft import LoraConfig, get_peft_model, TaskType
 import os
-from sft_trainer import *
-import torch.distributed as dist
 import random
+
 import numpy as np
+import torch
+from datasets import load_dataset
+from peft import LoraConfig, TaskType, get_peft_model
+from sft_trainer import dLLMDataCollator, dLLMSFTDataset, dLLMTrainer, preprocess_dataset
+from transformers import AutoModel, AutoTokenizer, TrainingArguments
 
 
 def init_seed(seed):
@@ -101,7 +100,7 @@ def train_model(args, tokenizer, model):
         num_train_epochs=args.num_epochs,
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum_steps,
-        evaluation_strategy="steps",
+        eval_strategy="steps",
         eval_steps=100,
         logging_steps=2,
         save_steps=100,

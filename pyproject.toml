@@ -34,7 +34,7 @@ dependencies = [
 
 
 [tool.setuptools.packages.find]
-include = ["src"]
+include = ["SFT", "eval", "diffu-grpo"]
 
 [tool.uv]
 package = true

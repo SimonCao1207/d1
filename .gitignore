@@ -197,3 +197,4 @@ outputs/
 results/
 notebooks/
 data/
+wandb/

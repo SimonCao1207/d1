@@ -9,6 +9,7 @@ NUM_ITER=12 # number of policy gradient inner updates iterations
 
 accelerate launch \
     --config_file accelerate.yaml \
+    --num_processes 2 \
     --main_process_port 12346 diffu_grpo_train.py \
     --config slurm_scripts/train.yaml \
     --model_path $MODEL_PATH \

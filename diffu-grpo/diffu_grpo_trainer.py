@@ -5,7 +5,6 @@ from typing import Any, Optional, Union
 import numpy as np
 import torch
 import torch.nn.functional as F
-import wandb
 from accelerate.utils import gather, gather_object, set_seed
 from datasets import Dataset, IterableDataset
 from torch import nn
@@ -20,6 +19,8 @@ from trl.trainer.grpo_trainer import GRPOTrainer
 from trl.trainer.utils import (
     print_prompt_completions_sample,
 )
+
+import wandb
 
 if is_peft_available():
     from peft import PeftConfig
@@ -227,7 +228,8 @@ class DiffuGRPOTrainer(GRPOTrainer):
             return x
 
     def forward_process(self, batch, prompt_index, mask_id, seed=None):
-        set_seed(seed)
+        if seed is not None:
+            set_seed(seed.item())
         b, l = batch.shape
         t_p = torch.ones(b, device=batch.device) * self.args.p_mask_prompt
 

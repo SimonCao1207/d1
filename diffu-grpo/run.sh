@@ -4,7 +4,7 @@ mkdir -p $LOGDIR
 
 DATASET="sudoku"
 RUN_NAME=${DATASET}_base_bs12
-MODEL_PATH=/data0/shared/LLaDA-8B-Instruct
+MODEL_PATH=GSAI-ML/LLaDA-8B-Instruct
 NUM_ITER=12 # number of policy gradient inner updates iterations
 
 accelerate launch \

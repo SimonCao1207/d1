@@ -1,3 +1,5 @@
+import warnings
+
 import torch
 from data_utils import (
     get_countdown_questions,
@@ -25,6 +27,7 @@ from reward_func import (
 from transformers import AutoModel, AutoTokenizer, BitsAndBytesConfig
 from trl import ModelConfig, TrlParser
 
+warnings.filterwarnings("ignore")
 
 def main(grpo_config, model_config):
     # Set seed for reproducibility
